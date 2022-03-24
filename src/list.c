@@ -1,5 +1,8 @@
 #include <list.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <unistd.h>
+
 /*
  * @brief initializes a list structure
  * @param p_destroy a function used to destroy the data in a list node

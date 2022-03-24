@@ -1,6 +1,7 @@
 #ifndef _LIST_H
 #define _LIST_H
 #include <stdint.h>
+#include <stdlib.h>
 
 /*
  * @brief a node for a list structure
@@ -9,8 +10,8 @@
  * @param p_data the data that the node has
  */
 typedef struct list_node {
-    list_node * p_prev;
-    list_node * p_next;
+    struct list_node * p_prev;
+    struct list_node * p_next;
     const void * p_data;
 } list_node;
 
@@ -26,8 +27,8 @@ typedef struct list {
     list_node * p_head;
     list_node * p_tail;
     size_t num_nodes;
-    void * p_destroy(const void * p_data)
-    void * p_compare(const void * p_data1, const void * p_data2)
+    void (* p_destroy)(const void * p_data);
+    void (* p_compare)(const void * p_data1, const void * p_data2);
 } list;
 list * list_init(void * p_destroy(const void * p_data), 
                  void * p_compare(const void * p_data1, const void * p_data2));

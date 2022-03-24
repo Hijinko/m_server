@@ -61,7 +61,7 @@ int main(int argc, char ** argv)
     sigaction(SIGINT, action, NULL);
     // create threads for the pool
     for(uint8_t index = 0; index < THREAD_POOL_SIZE; index++){
-        pthread_create(&thread_pool[index], NULL, handle_connection, NULL);
+        pthread_create(&thread_pool[index], NULL, thread_handler, NULL);
     }
 
     char port[] = "8888";
