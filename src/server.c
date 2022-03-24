@@ -13,9 +13,19 @@
 
 bool running = true;
 
-void handler(int sig){
+void handler(int sig)
+{
     (void)sig;
     running = false;
+}
+
+void * handle_connection(void * arg)
+{
+    int cfd = *(int *)arg;
+    char greeting[] = "hello\n";
+    send(cfd, &greeting, strlen(greeting), 0);
+    close(cfd);
+    return NULL;
 }
 
 int main(int argc, char ** argv)
@@ -42,9 +52,9 @@ int main(int argc, char ** argv)
         struct sockaddr_storage client;
         socklen_t client_sz = sizeof(client);    
         int cfd = accept4(sfd, (struct sockaddr*)&client, &client_sz, 0);
-        char greeting[] = "hello\n";
-        send(cfd, &greeting, strlen(greeting), 0);
-        close(cfd);
+        pthread_t connection_thread;
+        pthread_create(&connection_thread, NULL, handle_connection, &cfd);
+        pthread_join(connection_thread, NULL);
     }
     printf("[SHUTTING DOWN]\n");
     close(sfd);
