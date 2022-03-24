@@ -1,4 +1,4 @@
-CMD = cc 
+CMD = gcc 
 CFLAGS = -Wall -Wextra -Wall -Wextra -Wpedantic -Waggregate-return -Wwrite-strings -Wvla -Wfloat-equal
 LNK = -lcheck -lm -pthread -lrt -lsubunit
 SRC = ./src/
@@ -11,16 +11,18 @@ TSTINC = ./test/include
 CMD += $(LNK)
 CMD += $(CFLAGS)
 CMD += -I $(INC)
+BINS = server
+OBJS = $(BIN)server.o $(BIN)cserver.o
 
-all: server
+all: $(BINS)
 
 ################
 # main targets #
 ################
-server: $(SRC)server.c $(BIN)cserver.o
+server: $(OBJS)
 	$(CMD) $^ -o $@
-$(BIN)cserver.o: $(SRC)cserver.c $(INC)cserver.h
-	$(CMD) -c $< -o $@
+$(BIN)%.o: $(SRC)%.c
+	$(CMD) -c $^ -o $@
 
 clean:
 	rm -rf bin/*
