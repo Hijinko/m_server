@@ -24,7 +24,9 @@ void * handle_connection(void * arg)
     int cfd = *(int *)arg;
     char greeting[] = "hello\n";
     send(cfd, &greeting, strlen(greeting), 0);
-    close(cfd);
+    if(cfd > 0){
+        close(cfd);
+    }
     return NULL;
 }
 
@@ -33,10 +35,9 @@ int main(int argc, char ** argv)
     (void)argc;
     (void)argv;
     // handle Ctrl-C
-    struct sigaction action;
-    action.sa_handler = handler;
-    sigfillset(&action.sa_mask);
-    sigaction(SIGINT, &action, NULL);
+    struct sigaction * action = calloc(1, sizeof(*action));
+    action->sa_handler = handler;
+    sigaction(SIGINT, action, NULL);
     char port[] = "8888";
     // create the server to listen on
     struct addrinfo * p_server = cserver_create(SOCK_STREAM, port);
@@ -58,6 +59,7 @@ int main(int argc, char ** argv)
     }
     printf("[SHUTTING DOWN]\n");
     close(sfd);
+    free(action);
     free(p_host);
     free(p_service);
 }
