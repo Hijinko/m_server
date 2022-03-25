@@ -14,7 +14,7 @@ CMD += -I $(INC)
 TARGETS = server
 TEST_TARGETS = check_check
 OBJS = $(BIN)server.o $(BIN)cserver.o $(BIN)list.o
-TSTOBJS = $(TSTBIN)check_check.o $(TSTBIN)test_list.o
+TSTOBJS = $(TSTBIN)check_check.o $(TSTBIN)test_list.o $(BIN)list.o
 all: $(TARGETS)
 
 ################
@@ -27,8 +27,8 @@ $(BIN)%.o: $(SRC)%.c
 ################
 # test targets #
 ################
-$(TEST_TARGETS): $(OBJS) $(TSTOBJS)
-	$(CMD) $^ -o $@
+$(TEST_TARGETS): $(TSTOBJS)
+	$(CMD) $^ $(LNK) -o $@
 $(TSTBIN)%.o: $(TSTSRC)%.c
 	$(CMD) -c $^ -o $@
 #######################

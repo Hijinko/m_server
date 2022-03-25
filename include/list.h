@@ -30,8 +30,9 @@ typedef struct list {
     void (* p_destroy)(const void * p_data);
     void (* p_compare)(const void * p_data1, const void * p_data2);
 } list;
-list * list_init(void * p_destroy(const void * p_data), 
-                 void * p_compare(const void * p_data1, const void * p_data2));
+list * list_init(void (* p_destroy)(const void * p_data), 
+                 void (* p_compare)(const void * p_data1, 
+                                    const void * p_data2));
 list_node * list_append(list * p_list, const void * p_data);
 list_node * list_search(list * p_list, const void * p_data);
 int8_t list_remove(list * p_list, const void * p_data);
