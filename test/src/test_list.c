@@ -12,7 +12,7 @@ static void start_list(void)
     p_list = list_init(NULL, NULL);
     list_append(p_list, "hello");
     list_append(p_list, "hey");
-    list_append(p_list, "hey");
+    list_append(p_list, "happy");
     list_append(p_list, "foo");
 }
 
@@ -24,10 +24,16 @@ static void teardown_list(void)
 START_TEST(test_list_append)
 {
     ck_assert_int_eq(4, p_list->num_nodes);
-    //list_node * p_node = list_append(p_list, "bar");
-    list_append(p_list, "bar");
-    //ck_assert(NULL != p_node);
+    list_node * p_node = list_append(p_list, "bar");
+    ck_assert(NULL != p_node);
     ck_assert_int_eq(5, p_list->num_nodes);
+}
+END_TEST
+
+START_TEST(test_list_search)
+{
+    list_node * p_node = list_search(p_list, "happy");
+    ck_assert_str_eq("happy", (char *)p_node->p_data);
 }
 END_TEST
 
