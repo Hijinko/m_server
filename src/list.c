@@ -119,8 +119,38 @@ list_node * list_search(list * p_list, const void * p_data)
   this function will run the p_destroy function on the data
  * @param p_list the list to remove the data from
  * @param p_data the data to remove fro the list
+ * @return -1 on error or if the data is not in the list else 0
  */ 
-int8_t list_remove(list * p_list, const void * p_data);
+int8_t list_remove(list * p_list, const void * p_data)
+{
+    uint8_t ret = -1;
+    list_node * p_node = list_search(p_list, p_data);
+    if (NULL != p_node){
+        list_node * p_prev = p_node->p_prev;
+        list_node * p_next = p_node->p_next;
+        if (p_list->p_head == p_node){
+            // check if node is at the head
+            p_list->p_head = p_next;
+        } else if (p_list->p_tail == p_node){
+            p_list->p_tail = p_prev;
+        }
+        // restructure the list
+        if (NULL != p_prev){
+            p_prev->p_next = p_next;
+        }
+        if (NULL != p_next){
+            p_next->p_prev = p_prev;
+        }
+        ret = 0;
+    }
+    // now that the list is restructured remove the node
+    if (NULL != p_list->p_destroy){
+        p_list->p_destroy(p_node->p_data);
+    }
+    free(p_node);
+    p_list->num_nodes--;
+    return ret;
+}
 
 /*
  * @brief destroys a list, frees the memory allocated by the list and all its
