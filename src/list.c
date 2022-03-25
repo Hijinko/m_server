@@ -1,15 +1,27 @@
 #include <list.h>
+#include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 
+/*
+ * @brief initializes a list node and assigns the data to it
+ * @param p_data the data to assign to the node
+ * @return NULL on error else an allocated list node
+ */
 static list_node * list_node_init(const void * p_data)
 {
     list_node * p_node = calloc(1, sizeof(*p_node));
-    p_node->p_data = p_data;
-    p_node->p_prev = NULL;
-    p_node->p_next = NULL;
+    if (NULL != p_node){
+        // only assign the node values if it was succesffuly allocated
+        p_node->p_data = p_data;
+        p_node->p_prev = NULL;
+        p_node->p_next = NULL;
+    } else {
+        // the node was not succesfully allocated
+        perror("CALLOC");
+    }
     return p_node;
 }
 
@@ -18,11 +30,16 @@ static list_node * list_node_init(const void * p_data)
  * @param p_string1 the first piece of data to analyze
  * @param p_string2 the second piece of data to analyze
  * @return -1, 0, 1 if p_string1 is less than, equal to 
- *  or greater than p_string2
+ *  or greater than p_string2 or -2 on error
  */
 int list_str_compare(const void * p_string1, const void * p_string2)
 {
-    return strcmp((char *)p_string1, (char *)p_string2);
+    int err = -2;
+    if ((NULL != p_string1) && (NULL != p_string2)){
+        // can only compare the strings if the data is not NULL
+        err = strcmp((char *)p_string1, (char *)p_string2);
+    }
+    return err;
 }
 
 /*
@@ -35,11 +52,17 @@ list * list_init(void * (* p_destroy)(const void * p_data),
                  int (* p_compare)(const void * p_data1, const void * p_data2))
 {
     list * p_list = calloc(1, sizeof(*p_list));
-    p_list->num_nodes = 0;
-    p_list->p_head = NULL;
-    p_list->p_tail = NULL;
-    p_list->p_destroy = p_destroy;
-    p_list->p_compare = p_compare;
+    if(NULL != p_list){
+        // only assign th values if the list was successfuly allocated
+        p_list->num_nodes = 0;
+        p_list->p_head = NULL;
+        p_list->p_tail = NULL;
+        p_list->p_destroy = p_destroy;
+        p_list->p_compare = p_compare;
+    } else {
+        // was not able to allocate the list
+        perror("CALLOC");
+    }
     return p_list;
 }
 

@@ -37,6 +37,13 @@ START_TEST(test_list_search)
 }
 END_TEST
 
+START_TEST(test_list_remove)
+{
+    size_t start_nodes = p_list->num_nodes; 
+    list_remove(p_list, "hey");
+    ck_assert_int_eq((start_nodes - 1), p_list->num_nodes);
+}END_TEST
+
 // create suite
 Suite * suite_list(void)
 {
@@ -46,8 +53,8 @@ Suite * suite_list(void)
     tcase_add_checked_fixture(p_core, start_list, teardown_list);
     tcase_add_test(p_core, test_list_append);
     tcase_add_test(p_core, test_list_search);
+    tcase_add_test(p_core, test_list_remove);
     // add core to suite
     suite_add_tcase(p_suite, p_core);
     return p_suite;
 }
-
