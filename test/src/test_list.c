@@ -9,7 +9,7 @@ static list * p_list = NULL;
 
 static void start_list(void)
 {
-    p_list = list_init(NULL, NULL);
+    p_list = list_init(NULL, list_str_compare);
     list_append(p_list, "hello");
     list_append(p_list, "hey");
     list_append(p_list, "happy");
@@ -45,6 +45,7 @@ Suite * suite_list(void)
     // add test cases 
     tcase_add_checked_fixture(p_core, start_list, teardown_list);
     tcase_add_test(p_core, test_list_append);
+    tcase_add_test(p_core, test_list_search);
     // add core to suite
     suite_add_tcase(p_suite, p_core);
     return p_suite;

@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 static list_node * list_node_init(const void * p_data)
 {
@@ -13,14 +14,25 @@ static list_node * list_node_init(const void * p_data)
 }
 
 /*
+ * @brief a compare function for when the node data is supposed to be strings
+ * @param p_string1 the first piece of data to analyze
+ * @param p_string2 the second piece of data to analyze
+ * @return -1, 0, 1 if p_string1 is less than, equal to 
+ *  or greater than p_string2
+ */
+int list_str_compare(const void * p_string1, const void * p_string2)
+{
+    return strcmp((char *)p_string1, (char *)p_string2);
+}
+
+/*
  * @brief initializes a list structure
  * @param p_destroy a function used to destroy the data in a list node
  * @param p_compare a function used to compare the data in each node
  * @return NULL on error else an allocated list structure
  */
-list * list_init(void (* p_destroy)(const void * p_data), 
-                 void (* p_compare)(const void * p_data1, 
-                                    const void * p_data2))
+list * list_init(void * (* p_destroy)(const void * p_data), 
+                 int (* p_compare)(const void * p_data1, const void * p_data2))
 {
     list * p_list = calloc(1, sizeof(*p_list));
     p_list->num_nodes = 0;
@@ -69,7 +81,15 @@ list_node * list_append(list * p_list, const void * p_data)
  * @return NULL on error or if the data does not exist in the list else a
  *  pointer to the list node that holds the data
  */
-list_node * list_search(list * p_list, const void * p_data);
+list_node * list_search(list * p_list, const void * p_data)
+{
+    for (list_node * p_node = p_list->p_head; p_node; p_node = p_node->p_next){
+        if (0 == p_list->p_compare(p_node->p_data, p_data)){
+            return p_node;
+        }
+    }
+    return NULL;
+}
 
 /*
  * @brief removes data from a list, if the p_destroy of the list is not NULL,

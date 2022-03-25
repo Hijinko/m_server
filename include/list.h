@@ -27,12 +27,12 @@ typedef struct list {
     list_node * p_head;
     list_node * p_tail;
     size_t num_nodes;
-    void (* p_destroy)(const void * p_data);
-    void (* p_compare)(const void * p_data1, const void * p_data2);
+    void * (* p_destroy)(const void * p_data);
+    int (* p_compare)(const void * p_data1, const void * p_data2);
 } list;
-list * list_init(void (* p_destroy)(const void * p_data), 
-                 void (* p_compare)(const void * p_data1, 
-                                    const void * p_data2));
+int list_str_compare(const void * p_string1, const void * p_string2);
+list * list_init(void * (* p_destroy)(const void * p_data), 
+                 int (* p_compare)(const void * p_data1, const void * p_data2));
 list_node * list_append(list * p_list, const void * p_data);
 list_node * list_search(list * p_list, const void * p_data);
 int8_t list_remove(list * p_list, const void * p_data);
