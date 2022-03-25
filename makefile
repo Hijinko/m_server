@@ -7,22 +7,33 @@ INC = ./include/
 TST = ./test/
 TSTSRC = ./test/src/
 TSTBIN = ./test/bin/
-TSTINC = ./test/include
+TSTINC = ./test/include/
 CMD += $(LNK)
 CMD += $(CFLAGS)
 CMD += -I $(INC)
-BINS = server
-OBJS = $(BIN)server.o $(BIN)cserver.o
-
-all: $(BINS)
+TARGETS = server
+TEST_TARGETS = check_check
+OBJS = $(BIN)server.o $(BIN)cserver.o $(BIN)list.o
+TSTOBJS = $(TSTBIN)check_check.o $(TSTBIN)test_list.o $(BIN)list.o
+all: $(TARGETS)
 
 ################
 # main targets #
 ################
-server: $(OBJS)
+$(TARGETS): $(OBJS)
 	$(CMD) $^ -o $@
 $(BIN)%.o: $(SRC)%.c
 	$(CMD) -c $^ -o $@
+################
+# test targets #
+################
+$(TEST_TARGETS): $(TSTOBJS)
+	$(CMD) $^ $(LNK) -o $@
+$(TSTBIN)%.o: $(TSTSRC)%.c
+	$(CMD) -c $^ -o $@
+#######################
+# maintenance targets #
+#######################
 
 clean:
 	rm -rf bin/*

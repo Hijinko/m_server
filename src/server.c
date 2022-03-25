@@ -37,6 +37,7 @@ void * handle_connection(void * arg)
 void * thread_handler(void * arg)
 {
     while(running){
+        (void)arg;
         /*
         pthread_mutex_lock(&mutex);
         int * p_client = dequeue();
@@ -60,7 +61,7 @@ int main(int argc, char ** argv)
     sigaction(SIGINT, action, NULL);
     // create threads for the pool
     for(uint8_t index = 0; index < THREAD_POOL_SIZE; index++){
-        pthread_create(&thread_pool[index], NULL, handle_connection, NULL);
+        pthread_create(&thread_pool[index], NULL, thread_handler, NULL);
     }
 
     char port[] = "8888";
@@ -78,6 +79,7 @@ int main(int argc, char ** argv)
         struct sockaddr_storage client;
         socklen_t client_sz = sizeof(client);    
         int cfd = accept4(sfd, (struct sockaddr*)&client, &client_sz, 0);
+        (void)cfd;
         /*
         pthread_mutex_lock(&mutex);
         enque(cfd);
