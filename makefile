@@ -1,4 +1,4 @@
-CMD = gcc 
+CMD = gcc
 CFLAGS = -Wall -Wextra -Wall -Wextra -Wpedantic -Waggregate-return -Wwrite-strings -Wvla -Wfloat-equal
 LNK = -lcheck -lm -pthread -lrt -lsubunit
 SRC = ./src/
@@ -13,8 +13,8 @@ CMD += $(CFLAGS)
 CMD += -I $(INC)
 TARGETS = server
 TEST_TARGETS = check_check
-OBJS = $(BIN)server.o $(BIN)cserver.o $(BIN)list.o
-TSTOBJS = $(TSTBIN)check_check.o $(TSTBIN)test_list.o $(BIN)list.o
+OBJS = $(BIN)server.o $(BIN)cserver.o $(BIN)list.o $(BIN)queue.o
+TSTOBJS = $(TSTBIN)check_check.o $(TSTBIN)test_list.o $(TSTBIN)test_queue.o $(BIN)list.o $(BIN)queue.o
 all: $(TARGETS)
 
 ################
@@ -42,8 +42,8 @@ clean:
 	rm -rf server
 debug: CMD += -g
 debug: clean all
-check: CMD += -I $(TSTINC)
+check: CMD += -g -I $(TSTINC)
 check: check_check
 valgrind: CMD += -I $(TSTINC)
-valgrind: debug check_check
+valgrind: debug check
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s ./check_check

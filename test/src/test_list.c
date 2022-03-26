@@ -10,10 +10,11 @@ static list * p_list = NULL;
 static void start_list(void)
 {
     p_list = list_init(NULL, list_str_compare);
-    list_append(p_list, "hello");
-    list_append(p_list, "hey");
-    list_append(p_list, "happy");
-    list_append(p_list, "foo");
+    const char * words[] = {"hello", "hey", "happy", "foo"};
+    size_t size = sizeof(words) / sizeof(char *);
+    for (size_t index = 0; index < size; index++){
+        list_append(p_list, words[index]);
+    }
 }
 
 static void teardown_list(void)
@@ -24,8 +25,10 @@ static void teardown_list(void)
 START_TEST(test_list_append)
 {
     ck_assert_int_eq(4, p_list->num_nodes);
+    ck_assert_str_eq(p_list->p_tail->p_data, "foo");
     list_node * p_node = list_append(p_list, "bar");
     ck_assert(NULL != p_node);
+    ck_assert_str_eq((char *)p_list->p_tail->p_data, "bar");
     ck_assert_int_eq(5, p_list->num_nodes);
 }
 END_TEST

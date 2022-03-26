@@ -44,12 +44,12 @@ int list_str_compare(const void * p_string1, const void * p_string2)
 
 /*
  * @brief initializes a list structure
- * @param p_destroy a function used to destroy the data in a list node
- * @param p_compare a function used to compare the data in each node
+ * @param destroy a function used to destroy the data in a list node
+ * @param compare a function used to compare the data in each node
  * @return NULL on error else an allocated list structure
  */
-list * list_init(void * (* p_destroy)(const void * p_data), 
-                 int (* p_compare)(const void * p_data1, const void * p_data2))
+list * list_init(void * (* destroy)(const void * p_data), 
+                 int (* compare)(const void * p_data1, const void * p_data2))
 {
     list * p_list = calloc(1, sizeof(*p_list));
     if(NULL != p_list){
@@ -57,8 +57,8 @@ list * list_init(void * (* p_destroy)(const void * p_data),
         p_list->num_nodes = 0;
         p_list->p_head = NULL;
         p_list->p_tail = NULL;
-        p_list->p_destroy = p_destroy;
-        p_list->p_compare = p_compare;
+        p_list->destroy = destroy;
+        p_list->compare = compare;
     } else {
         // was not able to allocate the list
         perror("CALLOC");
@@ -74,25 +74,19 @@ list * list_init(void * (* p_destroy)(const void * p_data),
  */
 list_node * list_append(list * p_list, const void * p_data)
 {
-    // create the new node
+    // create the node
     list_node * p_node = list_node_init(p_data);
-    // check if this node is the new head
+    // if the node is the first node then its both the head and tail
     if (0 == p_list->num_nodes){
         p_list->p_head = p_node;
+        p_list->p_tail = p_node;
     } else {
-        // check if inserting the tail node
-        if (NULL == p_list->p_tail){
-            p_list->p_tail = p_node;
-            p_node->p_prev = p_list->p_head;
-            p_list->p_head->p_next = p_node;
-        } else{
-            // inserting after the tail so update the new tail
-            p_list->p_tail->p_next = p_node;
-            p_node->p_prev = p_list->p_tail;
-            p_list->p_tail = p_node;
-        }
+        // the node is now the new tail and the old tail is moved 
+        list_node * p_old_tail = p_list->p_tail;
+        p_old_tail->p_next = p_node;
+        p_node->p_prev = p_old_tail;
+        p_list->p_tail = p_node;
     }
-    // increase the number of nodes and return the node
     p_list->num_nodes++;
     return p_node;
 }
@@ -107,7 +101,7 @@ list_node * list_append(list * p_list, const void * p_data)
 list_node * list_search(list * p_list, const void * p_data)
 {
     for (list_node * p_node = p_list->p_head; p_node; p_node = p_node->p_next){
-        if (0 == p_list->p_compare(p_node->p_data, p_data)){
+        if (0 == p_list->compare(p_node->p_data, p_data)){
             return p_node;
         }
     }
@@ -115,8 +109,8 @@ list_node * list_search(list * p_list, const void * p_data)
 }
 
 /*
- * @brief removes data from a list, if the p_destroy of the list is not NULL,
-  this function will run the p_destroy function on the data
+ * @brief removes data from a list, if the destroy of the list is not NULL,
+  this function will run the destroy function on the data
  * @param p_list the list to remove the data from
  * @param p_data the data to remove fro the list
  * @return -1 on error or if the data is not in the list else 0
@@ -142,20 +136,20 @@ int8_t list_remove(list * p_list, const void * p_data)
             p_next->p_prev = p_prev;
         }
         ret = 0;
+        // now that the list is restructured remove the node
+        if (NULL != p_list->destroy){
+            p_list->destroy(p_node->p_data);
+        }
+        free(p_node);
     }
-    // now that the list is restructured remove the node
-    if (NULL != p_list->p_destroy){
-        p_list->p_destroy(p_node->p_data);
-    }
-    free(p_node);
     p_list->num_nodes--;
     return ret;
 }
 
 /*
  * @brief destroys a list, frees the memory allocated by the list and all its
-  nodes. if the p_destroy of the list is not NULL, this function will run the 
-  p_destroy function on all the data in the list
+  nodes. if the destroy of the list is not NULL, this function will run the 
+  destroy function on all the data in the list
  * @param p_list the list to destroy
  */
 void list_destroy(list * p_list)
