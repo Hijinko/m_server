@@ -1,4 +1,4 @@
-CMD = gcc 
+CMD = gcc
 CFLAGS = -Wall -Wextra -Wall -Wextra -Wpedantic -Waggregate-return -Wwrite-strings -Wvla -Wfloat-equal
 LNK = -lcheck -lm -pthread -lrt -lsubunit
 SRC = ./src/
@@ -42,8 +42,8 @@ clean:
 	rm -rf server
 debug: CMD += -g
 debug: clean all
-check: CMD += -I $(TSTINC)
+check: CMD += -g -I $(TSTINC)
 check: check_check
 valgrind: CMD += -I $(TSTINC)
-valgrind: debug check_check
+valgrind: debug check
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s ./check_check

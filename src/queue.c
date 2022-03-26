@@ -80,7 +80,7 @@ const void * queue_enqueu(queue * p_queue, const void * p_data)
 const void * queue_dequeue(queue * p_queue)
 {
     if (NULL != p_queue){
-        const void * p_data = p_queue->p_stack->p_head;
+        const void * p_data = p_queue->p_stack->p_head->p_data;
         if (0 == list_remove(p_queue->p_stack, p_data)){
             // removing the data from the queue was successful
             return p_data;

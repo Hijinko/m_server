@@ -74,25 +74,19 @@ list * list_init(void * (* destroy)(const void * p_data),
  */
 list_node * list_append(list * p_list, const void * p_data)
 {
-    // create the new node
+    // create the node
     list_node * p_node = list_node_init(p_data);
-    // check if this node is the new head
+    // if the node is the first node then its both the head and tail
     if (0 == p_list->num_nodes){
         p_list->p_head = p_node;
+        p_list->p_tail = p_node;
     } else {
-        // check if inserting the tail node
-        if (NULL == p_list->p_tail){
-            p_list->p_tail = p_node;
-            p_node->p_prev = p_list->p_head;
-            p_list->p_head->p_next = p_node;
-        } else{
-            // inserting after the tail so update the new tail
-            p_list->p_tail->p_next = p_node;
-            p_node->p_prev = p_list->p_tail;
-            p_list->p_tail = p_node;
-        }
+        // the node is now the new tail and the old tail is moved 
+        list_node * p_old_tail = p_list->p_tail;
+        p_old_tail->p_next = p_node;
+        p_node->p_prev = p_old_tail;
+        p_list->p_tail = p_node;
     }
-    // increase the number of nodes and return the node
     p_list->num_nodes++;
     return p_node;
 }
@@ -142,12 +136,12 @@ int8_t list_remove(list * p_list, const void * p_data)
             p_next->p_prev = p_prev;
         }
         ret = 0;
+        // now that the list is restructured remove the node
+        if (NULL != p_list->destroy){
+            p_list->destroy(p_node->p_data);
+        }
+        free(p_node);
     }
-    // now that the list is restructured remove the node
-    if (NULL != p_list->destroy){
-        p_list->destroy(p_node->p_data);
-    }
-    free(p_node);
     p_list->num_nodes--;
     return ret;
 }
