@@ -1,5 +1,5 @@
 #define _GNU_SOURCE
-#define _POSIX_C_SOURCE
+#include <queue.h>
 #include <cserver.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -10,10 +10,12 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/socket.h>
-#define THREAD_POOL_SIZE 20
+#include <time.h>
+#define THREAD_POOL_SIZE 10 
 
 pthread_t thread_pool[THREAD_POOL_SIZE];
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t condition_var = PTHREAD_COND_INITIALIZER;
 
 bool running = true;
 
@@ -21,11 +23,19 @@ void handler(int sig)
 {
     (void)sig;
     running = false;
+    printf("HERE\n");
+    // TODO free the threads without getting stuck
+    /*
+    for(uint8_t index = 0; index < THREAD_POOL_SIZE; index++){
+        pthread_join(thread_pool[index], NULL);
+    };
+    */
+    printf("AND HERE\n");
 }
 
-void * handle_connection(void * arg)
+void * handle_connection(void * p_client)
 {
-    int cfd = *(int *)arg;
+    int cfd = *(int *)p_client;
     char greeting[] = "hello\n";
     send(cfd, &greeting, strlen(greeting), 0);
     if(cfd > 0){
@@ -36,17 +46,17 @@ void * handle_connection(void * arg)
 
 void * thread_handler(void * arg)
 {
+    queue * p_queue = arg;
     while(running){
-        (void)arg;
-        /*
-        pthread_mutex_lock(&mutex);
-        int * p_client = dequeue();
-        pthread_mutex_unlock(&mutex);
-        if (p_client == NULL){
-            // we have a connection
+        int * p_client = NULL;
+        if (NULL == (p_client = (int *)queue_dequeue(p_queue))){
+            pthread_cond_wait(&condition_var, &mutex);
+            p_client  = (int *)queue_dequeue(p_queue);
+        }
+            pthread_mutex_unlock(&mutex);
+        if (NULL != p_client){
             handle_connection(p_client);
         }
-        */
     }
     return NULL;
 }
@@ -59,9 +69,11 @@ int main(int argc, char ** argv)
     struct sigaction * action = calloc(1, sizeof(*action));
     action->sa_handler = handler;
     sigaction(SIGINT, action, NULL);
+    // creat the queue for the threads
+    queue * p_queue = queue_init(queue_compare_ints);
     // create threads for the pool
     for(uint8_t index = 0; index < THREAD_POOL_SIZE; index++){
-        pthread_create(&thread_pool[index], NULL, thread_handler, NULL);
+        pthread_create(&thread_pool[index], NULL, thread_handler, p_queue);
     }
 
     char port[] = "8888";
@@ -79,14 +91,15 @@ int main(int argc, char ** argv)
         struct sockaddr_storage client;
         socklen_t client_sz = sizeof(client);    
         int cfd = accept4(sfd, (struct sockaddr*)&client, &client_sz, 0);
-        (void)cfd;
-        /*
+        int * p_client = &cfd;
+        // pthread_mutex_lock(&mutex);
         pthread_mutex_lock(&mutex);
-        enque(cfd);
+        queue_enqueu(p_queue, p_client);
+        pthread_cond_signal(&condition_var);
         pthread_mutex_unlock(&mutex);
-        */
     }
     printf("[SHUTTING DOWN]\n");
+    queue_destroy(p_queue);
     close(sfd);
     free(action);
     free(p_host);
