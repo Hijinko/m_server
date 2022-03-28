@@ -13,12 +13,15 @@
 static list_node * list_node_init(void * p_data)
 {
     list_node * p_node = calloc(1, sizeof(*p_node));
-    if (NULL != p_node){
+    if (NULL != p_node)
+    {
         // only assign the node values if it was succesffuly allocated
         p_node->p_data = p_data;
         p_node->p_prev = NULL;
         p_node->p_next = NULL;
-    } else {
+    } 
+    else 
+    {
         // the node was not succesfully allocated
         perror("CALLOC");
     }
@@ -35,7 +38,8 @@ static list_node * list_node_init(void * p_data)
 int list_str_compare(const void * p_string1, const void * p_string2)
 {
     int err = -2;
-    if ((NULL != p_string1) && (NULL != p_string2)){
+    if ((NULL != p_string1) && (NULL != p_string2))
+    {
         // can only compare the strings if the data is not NULL
         err = strcmp((char *)p_string1, (char *)p_string2);
     }
@@ -52,14 +56,17 @@ list * list_init(void (* destroy)(void * p_data),
                  int (* compare)(const void * p_data1, const void * p_data2))
 {
     list * p_list = calloc(1, sizeof(*p_list));
-    if(NULL != p_list){
+    if(NULL != p_list)
+    {
         // only assign th values if the list was successfuly allocated
         p_list->num_nodes = 0;
         p_list->p_head = NULL;
         p_list->p_tail = NULL;
         p_list->destroy = destroy;
         p_list->compare = compare;
-    } else {
+    } 
+    else 
+    {
         // was not able to allocate the list
         perror("CALLOC");
     }
@@ -77,10 +84,13 @@ list_node * list_append(list * p_list, void * p_data)
     // create the node
     list_node * p_node = list_node_init(p_data);
     // if the node is the first node then its both the head and tail
-    if (0 == p_list->num_nodes){
+    if (0 == p_list->num_nodes)
+    {
         p_list->p_head = p_node;
         p_list->p_tail = p_node;
-    } else {
+    } 
+    else 
+    {
         // the node is now the new tail and the old tail is moved 
         list_node * p_old_tail = p_list->p_tail;
         p_old_tail->p_next = p_node;
@@ -100,8 +110,10 @@ list_node * list_append(list * p_list, void * p_data)
  */
 list_node * list_search(list * p_list, const void * p_data)
 {
-    for (list_node * p_node = p_list->p_head; p_node; p_node = p_node->p_next){
-        if (0 == p_list->compare(p_node->p_data, p_data)){
+    for (list_node * p_node = p_list->p_head; p_node; p_node = p_node->p_next)
+    {
+        if (0 == p_list->compare(p_node->p_data, p_data))
+        {
             return p_node;
         }
     }
@@ -119,25 +131,32 @@ int8_t list_remove(list * p_list, const void * p_data)
 {
     uint8_t ret = -1;
     list_node * p_node = list_search(p_list, p_data);
-    if (NULL != p_node){
+    if (NULL != p_node)
+    {
         list_node * p_prev = p_node->p_prev;
         list_node * p_next = p_node->p_next;
-        if (p_list->p_head == p_node){
+        if (p_list->p_head == p_node)
+        {
             // check if node is at the head
             p_list->p_head = p_next;
-        } else if (p_list->p_tail == p_node){
+        } 
+        else if (p_list->p_tail == p_node)
+        {
             p_list->p_tail = p_prev;
         }
         // restructure the list
-        if (NULL != p_prev){
+        if (NULL != p_prev)
+        {
             p_prev->p_next = p_next;
         }
-        if (NULL != p_next){
+        if (NULL != p_next)
+        {
             p_next->p_prev = p_prev;
         }
         ret = 0;
         // now that the list is restructured remove the node
-        if (NULL != p_list->destroy){
+        if (NULL != p_list->destroy)
+        {
             p_list->destroy(p_node->p_data);
         }
         free(p_node);
@@ -154,10 +173,12 @@ int8_t list_remove(list * p_list, const void * p_data)
  */
 void list_destroy(list * p_list)
 {
-    for (size_t index = 0; index < p_list->num_nodes; index++){
+    for (size_t index = 0; index < p_list->num_nodes; index++)
+    {
         // get the old head
         list_node * p_old_head = p_list->p_head;
-        if (NULL != p_old_head){
+        if (NULL != p_old_head)
+        {
             // move the new head;
             list_node * p_new_head = p_old_head->p_next;
             p_list->p_head = p_new_head;

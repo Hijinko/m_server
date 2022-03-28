@@ -25,7 +25,8 @@ void handler(int sig)
     running = false;
     // wake up threads for joining 
     pthread_cond_broadcast(&condition_var);
-    for(uint8_t index = 0; index < THREAD_POOL_SIZE; index++){
+    for(uint8_t index = 0; index < THREAD_POOL_SIZE; index++)
+    {
         pthread_join(thread_pool[index], NULL);
     }
 }
@@ -35,7 +36,8 @@ void * handle_connection(void * p_client)
     int cfd = *(int *)p_client;
     char greeting[] = "hello\n";
     send(cfd, &greeting, strlen(greeting), 0);
-    if(cfd > 0){
+    if(cfd > 0)
+    {
         close(cfd);
     }
     return NULL;
@@ -46,12 +48,14 @@ void * thread_handler(void * arg)
     queue * p_queue = arg;
     while(running){
         int * p_client = NULL;
-        if (NULL == (p_client = queue_dequeue(p_queue))){
+        if (NULL == (p_client = queue_dequeue(p_queue)))
+        {
             pthread_cond_wait(&condition_var, &mutex);
             p_client  = queue_dequeue(p_queue);
         }
             pthread_mutex_unlock(&mutex);
-        if (NULL != p_client){
+        if (NULL != p_client)
+        {
             handle_connection(p_client);
         }
     }
@@ -69,7 +73,8 @@ int main(int argc, char ** argv)
     // creat the queue for the threads
     queue * p_queue = queue_init(queue_compare_ints);
     // create threads for the pool
-    for(uint8_t index = 0; index < THREAD_POOL_SIZE; index++){
+    for(uint8_t index = 0; index < THREAD_POOL_SIZE; index++)
+    {
         pthread_create(&thread_pool[index], NULL, thread_handler, p_queue);
     }
 
@@ -84,7 +89,8 @@ int main(int argc, char ** argv)
     freeaddrinfo(p_server);
     printf("[LISTENING] %s:%s\n", p_host, p_service);
     // run the server
-    while(running){
+    while(running)
+    {
         struct sockaddr_storage client;
         socklen_t client_sz = sizeof(client);    
         int cfd = accept4(sfd, (struct sockaddr*)&client, &client_sz, 0);

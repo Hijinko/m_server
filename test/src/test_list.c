@@ -32,7 +32,8 @@ static void start_list(void)
     const char * words[] = {word1, word2, word3, word4};
     size_t size = sizeof(words) / sizeof(char *);
     p_list = list_init(free, list_str_compare);
-    for (size_t index = 0; index < size; index++){
+    for (size_t index = 0; index < size; index++)
+    {
         list_append(p_list, convert_const(words[index]));
     }
 }
