@@ -44,6 +44,7 @@ debug: CMD += -g
 debug: clean all
 check: CMD += -g -I $(TSTINC)
 check: check_check
-valgrind: CMD += -I $(TSTINC)
 valgrind: debug check
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s ./check_check
+vmain: debug check
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s ./server

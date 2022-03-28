@@ -33,12 +33,12 @@ void handler(int sig)
 
 void * handle_connection(void * p_client)
 {
-    int cfd = *(int *)p_client;
+    int * cfd = p_client;
     char greeting[] = "hello\n";
-    send(cfd, &greeting, strlen(greeting), 0);
-    if(cfd > 0)
+    send(*cfd, &greeting, strlen(greeting), 0);
+    if(*cfd > 0)
     {
-        close(cfd);
+        close(*cfd);
     }
     return NULL;
 }

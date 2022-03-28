@@ -1,6 +1,8 @@
+# custom
+server
+check_check
 # vscode
 .vscode
-server
 # Prerequisites
 *.d
 
