@@ -25,16 +25,20 @@ int queue_compare_ints(const void * p_num1, const void * p_num2)
 queue * queue_init(int compare(const void * p_data1, const void * p_data2))
 {
     queue * p_queue = calloc(1, sizeof(*p_queue));
-    if (NULL != p_queue){
+    if (NULL != p_queue)
+    {
         // allocation was successful
         p_queue->p_stack = list_init(NULL, compare);
-        if (NULL == p_queue->p_stack){
+        if (NULL == p_queue->p_stack)
+        {
             // if the stack could not be allocated then free the queue 
             // and return NULL
             free(p_queue);
             return NULL;
         }
-    } else {
+    } 
+    else 
+    {
         perror("CALLOC");
     }
     return p_queue;
@@ -46,7 +50,8 @@ queue * queue_init(int compare(const void * p_data1, const void * p_data2))
  */
 void queue_destroy(queue * p_queue)
 {
-    if (NULL != p_queue){
+    if (NULL != p_queue)
+    {
         // can only free memory if the data is not NULL
         list_destroy(p_queue->p_stack);
         free(p_queue);
@@ -61,9 +66,11 @@ void queue_destroy(queue * p_queue)
  */
 void * queue_enqueu(queue * p_queue, void * p_data)
 {
-    if ((NULL != p_queue) && (NULL != p_data)){
+    if ((NULL != p_queue) && (NULL != p_data))
+    {
         list_node * p_node = list_append(p_queue->p_stack, p_data);
-        if (NULL != p_node){
+        if (NULL != p_node)
+        {
             // appending to the queue was successful so return the data
             return p_node->p_data;
         }
@@ -79,9 +86,11 @@ void * queue_enqueu(queue * p_queue, void * p_data)
  */
 void * queue_dequeue(queue * p_queue)
 {
-    if ((NULL != p_queue) && (NULL != p_queue->p_stack->p_head)){
+    if ((NULL != p_queue) && (NULL != p_queue->p_stack->p_head))
+    {
         void * p_data = p_queue->p_stack->p_head->p_data;
-        if (0 == list_remove(p_queue->p_stack, p_data)){
+        if (0 == list_remove(p_queue->p_stack, p_data))
+        {
             // removing the data from the queue was successful
             return p_data;
         }

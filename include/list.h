@@ -9,7 +9,8 @@
  * @param p_next pointer to the node after the current node 
  * @param p_data the data that the node has
  */
-typedef struct list_node {
+typedef struct list_node 
+{
     struct list_node * p_prev;
     struct list_node * p_next;
     void * p_data;
@@ -23,7 +24,8 @@ typedef struct list_node {
  * @param p_destroy the function used to destroy the data that the nodes hold
  * @param p_compare the function used to compare the data that the nodes hold
  */
-typedef struct list {
+typedef struct list 
+{
     list_node * p_head;
     list_node * p_tail;
     size_t num_nodes;

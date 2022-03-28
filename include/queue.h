@@ -3,7 +3,8 @@
 #include <list.h>
 #include <stdlib.h>
 typedef struct list stack;
-typedef struct queue {
+typedef struct queue 
+{
     stack * p_stack;
 } queue;
 int queue_compare_ints(const void * p_num1, const void * p_num2);
