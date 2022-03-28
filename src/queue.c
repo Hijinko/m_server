@@ -11,10 +11,10 @@
  */
 int queue_compare_ints(const void * p_num1, const void * p_num2)
 {
-    int num1 = *(int *)p_num1;
-    int num2 = *(int *)p_num2;
+    const int * num1 = p_num1;
+    const int * num2 = p_num2;
     // compares num1 to num2 and returns the appropriate value
-    return (num1 < num2) ? -1 : ((num1 == num2) ? 0 : 1);
+    return (*num1 < *num2) ? -1 : ((*num1 == *num2) ? 0 : 1);
 }
 
 /*
@@ -59,7 +59,7 @@ void queue_destroy(queue * p_queue)
  * @param p_data the data to enqueu to the stack
  * @return a pointer to the data on success else NULL on error
  */
-const void * queue_enqueu(queue * p_queue, const void * p_data)
+void * queue_enqueu(queue * p_queue, void * p_data)
 {
     if ((NULL != p_queue) && (NULL != p_data)){
         list_node * p_node = list_append(p_queue->p_stack, p_data);
@@ -77,10 +77,10 @@ const void * queue_enqueu(queue * p_queue, const void * p_data)
  * @param p_queue the queue to remove from the stack
  * @return the data that was dequed from the stack or NULL on error
  */
-const void * queue_dequeue(queue * p_queue)
+void * queue_dequeue(queue * p_queue)
 {
-    if (NULL != p_queue){
-        const void * p_data = p_queue->p_stack->p_head->p_data;
+    if ((NULL != p_queue) && (NULL != p_queue->p_stack->p_head)){
+        void * p_data = p_queue->p_stack->p_head->p_data;
         if (0 == list_remove(p_queue->p_stack, p_data)){
             // removing the data from the queue was successful
             return p_data;
