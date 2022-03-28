@@ -10,7 +10,7 @@
  * @param p_data the data to assign to the node
  * @return NULL on error else an allocated list node
  */
-static list_node * list_node_init(const void * p_data)
+static list_node * list_node_init(void * p_data)
 {
     list_node * p_node = calloc(1, sizeof(*p_node));
     if (NULL != p_node){
@@ -48,7 +48,7 @@ int list_str_compare(const void * p_string1, const void * p_string2)
  * @param compare a function used to compare the data in each node
  * @return NULL on error else an allocated list structure
  */
-list * list_init(void * (* destroy)(const void * p_data), 
+list * list_init(void (* destroy)(void * p_data), 
                  int (* compare)(const void * p_data1, const void * p_data2))
 {
     list * p_list = calloc(1, sizeof(*p_list));
@@ -72,7 +72,7 @@ list * list_init(void * (* destroy)(const void * p_data),
  * @param p_data the data to append to the list
  * @return NULL on error else a pointer to the list node that holds the data
  */
-list_node * list_append(list * p_list, const void * p_data)
+list_node * list_append(list * p_list, void * p_data)
 {
     // create the node
     list_node * p_node = list_node_init(p_data);
@@ -161,6 +161,11 @@ void list_destroy(list * p_list)
             // move the new head;
             list_node * p_new_head = p_old_head->p_next;
             p_list->p_head = p_new_head;
+            // run the destroy function on the data
+            if (NULL != p_list->destroy)
+            {
+                p_list->destroy(p_old_head->p_data);
+            }
             // free the old head;
             free(p_old_head);
         }

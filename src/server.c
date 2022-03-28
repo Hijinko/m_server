@@ -23,14 +23,11 @@ void handler(int sig)
 {
     (void)sig;
     running = false;
-    printf("HERE\n");
-    // TODO free the threads without getting stuck
-    /*
+    // wake up threads for joining 
+    pthread_cond_broadcast(&condition_var);
     for(uint8_t index = 0; index < THREAD_POOL_SIZE; index++){
         pthread_join(thread_pool[index], NULL);
-    };
-    */
-    printf("AND HERE\n");
+    }
 }
 
 void * handle_connection(void * p_client)
@@ -49,9 +46,9 @@ void * thread_handler(void * arg)
     queue * p_queue = arg;
     while(running){
         int * p_client = NULL;
-        if (NULL == (p_client = (int *)queue_dequeue(p_queue))){
+        if (NULL == (p_client = queue_dequeue(p_queue))){
             pthread_cond_wait(&condition_var, &mutex);
-            p_client  = (int *)queue_dequeue(p_queue);
+            p_client  = queue_dequeue(p_queue);
         }
             pthread_mutex_unlock(&mutex);
         if (NULL != p_client){
