@@ -13,7 +13,7 @@ CMD += $(CFLAGS)
 CMD += -I $(INC)
 TARGETS = server
 TEST_TARGETS = check_check
-OBJS = $(BIN)server.o $(BIN)cserver.o $(BIN)list.o $(BIN)queue.o
+OBJS = $(BIN)server.o $(BIN)cserver.o $(BIN)list.o $(BIN)queue.o $(BIN)handle.o
 TSTOBJS = $(TSTBIN)check_check.o $(TSTBIN)test_list.o $(TSTBIN)test_queue.o $(BIN)list.o $(BIN)queue.o
 all: $(TARGETS)
 
