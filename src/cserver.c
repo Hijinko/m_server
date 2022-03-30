@@ -11,7 +11,7 @@
  * @param p_protocol the protocol to bind to the server
  * @return the server results
  */
-struct addrinfo * cserver_create(int socktype, char * p_protocol)
+struct addrinfo * cserver_create(int socktype, const char * p_protocol)
 {
     struct addrinfo hints = {0};
     hints.ai_socktype = socktype;
